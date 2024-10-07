@@ -1,113 +1,76 @@
 <template>
   <ion-app>
     <ion-split-pane content-id="main-content">
-      <ion-menu content-id="main-content" type="overlay">
+      <ion-menu content-id="main-content" type="overlay" v-if="userStore.onboardingComplete">
         <ion-content>
-          <ion-list id="inbox-list">
-            <ion-list-header>Inbox</ion-list-header>
-            <ion-note>hi@ionicframework.com</ion-note>
-
+          <ion-list id="inbox-list" :key="componentKey" class="ion-margin">
+            <ion-list-header>
+              <ion-avatar>
+                <img alt="picture" :src="user.profilePicture">
+              </ion-avatar>{{ user.displayname }}</ion-list-header>
+            <ion-note> @{{ user.username }} </ion-note>
             <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
+              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none"
+                :detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
                 <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
-          </ion-list>
-
-          <ion-list id="labels-list">
-            <ion-list-header>Labels</ion-list-header>
-
-            <ion-item v-for="(label, index) in labels" lines="none" :key="index">
-              <ion-icon aria-hidden="true" slot="start" :ios="bookmarkOutline" :md="bookmarkSharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
-            </ion-item>
+            <ion-menu-toggle :auto-hide="false">
+              <ion-item @click="logOut()" router-direction="root" :router-link="'/onboarding'" lines="none"
+                :detail="false" class="hydrated">
+                <ion-icon aria-hidden="true" slot="start" :ios="logOutSharp" :md="logOutOutline"></ion-icon>
+                <ion-label>Logout</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
           </ion-list>
         </ion-content>
       </ion-menu>
+
       <ion-router-outlet id="main-content"></ion-router-outlet>
     </ion-split-pane>
   </ion-app>
 </template>
 
 <script setup lang="ts">
-import {
-  IonApp,
-  IonContent,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-  IonMenu,
-  IonMenuToggle,
-  IonNote,
-  IonRouterOutlet,
-  IonSplitPane,
-} from '@ionic/vue';
-import { ref } from 'vue';
-import {
-  archiveOutline,
-  archiveSharp,
-  bookmarkOutline,
-  bookmarkSharp,
-  heartOutline,
-  heartSharp,
-  mailOutline,
-  mailSharp,
-  paperPlaneOutline,
-  paperPlaneSharp,
-  trashOutline,
-  trashSharp,
-  warningOutline,
-  warningSharp,
-} from 'ionicons/icons';
+import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, IonAvatar } from '@ionic/vue';
+import { onBeforeMount, ref } from 'vue';
+import { useUserStore } from './store/user.store'
+import { personOutline, personSharp, logOutOutline, logOutSharp, homeOutline, homeSharp } from 'ionicons/icons';
+import { storeToRefs } from 'pinia';
+const userStore = useUserStore()
 
+onBeforeMount(async () => {
+  userStore.checkOnboarding()
+  await userStore.getUser()
+})
+
+const { user } = storeToRefs(userStore)
+
+const componentKey = ref(0)
 const selectedIndex = ref(0);
-const appPages = [
+const appPages = ref([
   {
-    title: 'Inbox',
-    url: '/folder/Inbox',
-    iosIcon: mailOutline,
-    mdIcon: mailSharp,
+    title: 'Home',
+    url: `/home`,
+    iosIcon: homeOutline,
+    mdIcon: homeSharp,
   },
   {
-    title: 'Outbox',
-    url: '/folder/Outbox',
-    iosIcon: paperPlaneOutline,
-    mdIcon: paperPlaneSharp,
-  },
-  {
-    title: 'Favorites',
-    url: '/folder/Favorites',
-    iosIcon: heartOutline,
-    mdIcon: heartSharp,
-  },
-  {
-    title: 'Archived',
-    url: '/folder/Archived',
-    iosIcon: archiveOutline,
-    mdIcon: archiveSharp,
-  },
-  {
-    title: 'Trash',
-    url: '/folder/Trash',
-    iosIcon: trashOutline,
-    mdIcon: trashSharp,
-  },
-  {
-    title: 'Spam',
-    url: '/folder/Spam',
-    iosIcon: warningOutline,
-    mdIcon: warningSharp,
-  },
-];
-const labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
+    title: 'Profile',
+    url: '/settings',
+    iosIcon: personOutline,
+    mdIcon: personSharp,
+  }
+]);
 
-const path = window.location.pathname.split('folder/')[1];
-if (path !== undefined) {
-  selectedIndex.value = appPages.findIndex((page) => page.title.toLowerCase() === path.toLowerCase());
+
+const logOut = () => {
+  localStorage.clear()
+  userStore.checkOnboarding()
+  userStore.customReset
 }
+
 </script>
 
 <style scoped>
@@ -183,7 +146,8 @@ ion-menu.ios ion-content {
 }
 
 ion-menu.ios ion-list {
-  padding: 20px 0 0 0;
+  padding: 60px 0 0 0;
+
 }
 
 ion-menu.ios ion-note {
@@ -229,5 +193,18 @@ ion-note {
 
 ion-item.selected {
   --color: var(--ion-color-primary);
+}
+
+ion-avatar {
+  margin-right: 1em;
+  aspect-ratio: 1/1;
+}
+
+#menu-icon {
+  color: var(--ion-color-light-contrast);
+}
+
+ion-list-header {
+  margin-bottom: 1em;
 }
 </style>
