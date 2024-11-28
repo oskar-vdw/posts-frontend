@@ -3,11 +3,23 @@
 Posts is a privacy-focused microblogging service designed to connect with friends, not gain followers. With Posts, you can create private circles for up to 15 friends. Due to its thread-based structure, discussions become manageable.
 
 
+
+<div style="display: inline-block; margin-right: 10px;">
 <img src="posts_app_store_1.png" width="500" />
-<img src="posts_app_store_1.png" width="500" />
-<img src="posts_app_store_1.png" width="500" />
-<img src="posts_app_store_1.png" width="500" />
-<img src="posts_app_store_1.png" width="500" />
+</div>
+<div style="display: inline-block; margin-right: 10px;">
+<img src="posts_app_store_2.png" width="500" />
+</div>
+<div style="display: inline-block; margin-right: 10px;">
+<img src="posts_app_store_3.png" width="500" />
+</div>
+<div style="display: inline-block; margin-right: 10px;">
+<img src="posts_app_store_4.png" width="500" />
+</div>
+<div style="display: inline-block; margin-right: 10px;">
+<img src="posts_app_store_5.png" width="500" />
+</div>
+
 
 
 
