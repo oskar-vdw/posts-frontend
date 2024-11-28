@@ -17,7 +17,7 @@ Posts is a privacy-focused microblogging service designed to connect with friend
 <img src="posts_app_store_4.png" width="200" />
 </div>
 <div style="display: inline-block; margin-right: 10px;">
-<img src="posts_app_store_5.jpg" width="200" />
+<img src="posts_app_store_5.jpeg" width="200" />
 </div>
 
 
